@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Image from "next/image";
 import { 
   Sparkles, 
   Calendar, 
@@ -10,7 +11,6 @@ import {
   Phone, 
   Mail, 
   MapPin, 
-  ChevronRight,
   Check,
   ArrowRight,
   Menu,
@@ -34,23 +34,34 @@ function Navbar() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 100);
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Close mobile menu on escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
   }, []);
 
   return (
     <nav
       ref={navRef}
-      className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ${
+      className={`fixed top-4 md:top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 max-w-[95vw] ${
         scrolled
-          ? "bg-ivory/60 glass border border-obsidian/10 shadow-lg shadow-obsidian/5"
+          ? "bg-[#FAF8F5]/80 backdrop-blur-xl border border-[#0D0D12]/10 shadow-lg shadow-[#0D0D12]/5"
           : "bg-transparent"
-      } rounded-full px-2 py-2`}
+      } rounded-full px-3 py-2 md:px-2`}
     >
       <div className="flex items-center gap-2 md:gap-6">
         {/* Logo */}
-        <a href="#" className="flex items-center gap-2 px-4">
-          <span className={`font-serif text-2xl tracking-tight ${scrolled ? "text-obsidian" : "text-ivory"}`}>
+        <a href="#" className="flex items-center gap-2 px-2 md:px-4">
+          <span className={`font-serif text-xl md:text-2xl tracking-tight transition-colors duration-300 ${
+            scrolled ? "text-[#0D0D12]" : "text-[#FAF8F5]"
+          }`}>
             LUMEN
           </span>
         </a>
@@ -61,8 +72,8 @@ function Navbar() {
             <a
               key={item}
               href={`#${item.toLowerCase().replace(" ", "-")}`}
-              className={`text-sm font-medium transition-colors hover:text-champagne lift-hover ${
-                scrolled ? "text-slate" : "text-ivory/80"
+              className={`text-sm font-medium transition-colors hover:text-[#C9A84C] ${
+                scrolled ? "text-[#2A2A35]" : "text-[#FAF8F5]/80"
               }`}
             >
               {item}
@@ -70,34 +81,35 @@ function Navbar() {
           ))}
         </div>
 
-        {/* CTA Button */}
+        {/* CTA Button - Desktop */}
         <a
           href="#цены"
-          className="hidden md:flex magnetic-hover overflow-hidden relative bg-champagne text-obsidian px-6 py-2.5 rounded-full font-medium text-sm"
+          className="hidden md:flex items-center gap-2 bg-[#C9A84C] text-[#0D0D12] px-5 py-2.5 rounded-full font-medium text-sm transition-transform hover:scale-[1.03] duration-300"
         >
-          <span className="relative z-10">Рассчитать стоимость</span>
+          Рассчитать стоимость
         </a>
 
         {/* Mobile Menu Toggle */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
           className={`md:hidden p-2 rounded-full transition-colors ${
-            scrolled ? "text-obsidian" : "text-ivory"
+            scrolled ? "text-[#0D0D12]" : "text-[#FAF8F5]"
           }`}
+          aria-label="Toggle menu"
         >
-          {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+          {mobileOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
 
       {/* Mobile Menu */}
       {mobileOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 mt-2 bg-ivory rounded-3xl shadow-xl p-6 border border-obsidian/10">
+        <div className="md:hidden absolute top-full left-0 right-0 mt-2 bg-[#FAF8F5] rounded-3xl shadow-xl p-6 border border-[#0D0D12]/10">
           <div className="flex flex-col gap-4">
             {["Услуги", "О нас", "Цены", "Контакты"].map((item) => (
               <a
                 key={item}
                 href={`#${item.toLowerCase().replace(" ", "-")}`}
-                className="text-obsidian font-medium py-2 hover:text-champagne transition-colors"
+                className="text-[#0D0D12] font-medium py-2 hover:text-[#C9A84C] transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
                 {item}
@@ -105,7 +117,7 @@ function Navbar() {
             ))}
             <a
               href="#цены"
-              className="bg-champagne text-obsidian px-6 py-3 rounded-full font-medium text-center mt-2"
+              className="bg-[#C9A84C] text-[#0D0D12] px-6 py-3 rounded-full font-medium text-center mt-2 transition-transform hover:scale-[1.02]"
               onClick={() => setMobileOpen(false)}
             >
               Рассчитать стоимость
@@ -122,7 +134,6 @@ function Navbar() {
 // ========================================
 function Hero() {
   const heroRef = useRef<HTMLElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -146,60 +157,65 @@ function Hero() {
   return (
     <section
       ref={heroRef}
-      className="relative h-[100dvh] min-h-[600px] flex items-end overflow-hidden"
+      className="relative h-[100dvh] min-h-[500px] md:min-h-[600px] flex items-end overflow-hidden"
     >
-      {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80')`,
-        }}
-      />
+      {/* Background Image with Next.js Image */}
+      <div className="absolute inset-0">
+        <Image
+          src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80"
+          alt="Luxury interior"
+          fill
+          priority
+          className="object-cover object-center"
+          sizes="100vw"
+        />
+      </div>
       
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 gradient-overlay" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D12] via-[#0D0D12]/70 to-transparent" />
       
-      {/* Marble Texture Overlay */}
-      <div
-        className="absolute inset-0 opacity-20 mix-blend-overlay"
-        style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80')`,
-          backgroundSize: "cover",
-        }}
-      />
+      {/* Marble Texture Overlay - Desktop only */}
+      <div className="absolute inset-0 opacity-20 mix-blend-overlay hidden md:block">
+        <Image
+          src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80"
+          alt=""
+          fill
+          className="object-cover"
+          sizes="100vw"
+        />
+      </div>
 
       {/* Content */}
-      <div ref={contentRef} className="relative z-10 w-full px-6 md:px-16 pb-16 md:pb-24">
+      <div className="relative z-10 w-full px-5 md:px-16 pb-20 md:pb-24">
         <div className="max-w-4xl">
-          {/* Hero Line Pattern: "[Aspirational noun] meets [Precision word]" */}
-          <p className="hero-text text-champagne font-mono text-sm md:text-base tracking-wider mb-4">
+          <p className="hero-text text-[#C9A84C] font-mono text-xs md:text-sm tracking-wider mb-3 md:mb-4">
             ПРЕМИАЛЬНЫЙ ЭКО-КЛИНИНГ
           </p>
           
-          <h1 className="hero-text font-sans text-4xl md:text-6xl lg:text-7xl font-bold text-ivory leading-[1.1] mb-4 tracking-tight">
+          <h1 className="hero-text font-sans text-3xl md:text-6xl lg:text-7xl font-bold text-[#FAF8F5] leading-[1.1] mb-3 md:mb-4 tracking-tight">
             Чистота встречает
           </h1>
           
-          <h2 className="hero-text font-serif text-5xl md:text-7xl lg:text-8xl text-champagne italic leading-[1.1] mb-8">
+          <h2 className="hero-text font-serif text-4xl md:text-7xl lg:text-8xl text-[#C9A84C] italic leading-[1.1] mb-6 md:mb-8">
             совершенство.
           </h2>
           
-          <p className="hero-text text-ivory/70 text-lg md:text-xl max-w-xl mb-10 leading-relaxed">
+          <p className="hero-text text-[#FAF8F5]/70 text-base md:text-xl max-w-xl mb-8 md:mb-10 leading-relaxed">
             Научный подход к чистоте. Этичный к природе. 
             Мы создаём пространство, где каждая деталь продумана.
           </p>
           
-          <div className="hero-text flex flex-col sm:flex-row gap-4">
+          <div className="hero-text flex flex-col sm:flex-row gap-3 md:gap-4">
             <a
               href="#цены"
-              className="magnetic-hover inline-flex items-center justify-center gap-2 bg-champagne text-obsidian px-8 py-4 rounded-full font-medium text-lg"
+              className="inline-flex items-center justify-center gap-2 bg-[#C9A84C] text-[#0D0D12] px-6 md:px-8 py-3 md:py-4 rounded-full font-medium text-base md:text-lg transition-transform hover:scale-[1.03] duration-300"
             >
               Рассчитать стоимость
-              <ArrowRight size={20} />
+              <ArrowRight size={18} className="md:w-5 md:h-5" />
             </a>
             <a
               href="#услуги"
-              className="magnetic-hover inline-flex items-center justify-center gap-2 border border-ivory/30 text-ivory px-8 py-4 rounded-full font-medium text-lg hover:bg-ivory/10 transition-colors"
+              className="inline-flex items-center justify-center gap-2 border border-[#FAF8F5]/30 text-[#FAF8F5] px-6 md:px-8 py-3 md:py-4 rounded-full font-medium text-base md:text-lg hover:bg-[#FAF8F5]/10 transition-colors"
             >
               Наши услуги
             </a>
@@ -208,9 +224,9 @@ function Hero() {
       </div>
 
       {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <div className="w-6 h-10 border-2 border-ivory/30 rounded-full flex items-start justify-center p-2">
-          <div className="w-1 h-2 bg-champagne rounded-full animate-pulse" />
+      <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 animate-bounce hidden sm:block">
+        <div className="w-5 h-8 md:w-6 md:h-10 border-2 border-[#FAF8F5]/30 rounded-full flex items-start justify-center p-1.5 md:p-2">
+          <div className="w-1 h-1.5 md:h-2 bg-[#C9A84C] rounded-full animate-pulse" />
         </div>
       </div>
     </section>
@@ -242,35 +258,35 @@ function ShufflerCard() {
   }, []);
 
   return (
-    <div className="bg-ivory rounded-[2rem] p-8 border border-obsidian/5 shadow-xl shadow-obsidian/5 h-full flex flex-col">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-full bg-champagne/10 flex items-center justify-center">
-          <Sparkles className="text-champagne" size={20} />
+    <div className="bg-[#FAF8F5] rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-8 border border-[#0D0D12]/5 shadow-xl shadow-[#0D0D12]/5 h-full flex flex-col">
+      <div className="flex items-center gap-3 mb-4 md:mb-6">
+        <div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-[#C9A84C]/10 flex items-center justify-center flex-shrink-0">
+          <Sparkles className="text-[#C9A84C] w-4 h-4 md:w-5 md:h-5" />
         </div>
-        <h3 className="font-sans text-xl font-bold text-obsidian">Научный подбор</h3>
+        <h3 className="font-sans text-lg md:text-xl font-bold text-[#0D0D12]">Научный подбор</h3>
       </div>
       
-      <p className="text-slate text-sm mb-6 leading-relaxed">
+      <p className="text-[#2A2A35] text-sm mb-4 md:mb-6 leading-relaxed">
         Индивидуальный подбор эко-средств на основе анализа вашего пространства
       </p>
       
       {/* Shuffler Cards */}
-      <div className="relative h-40 flex-1">
+      <div className="relative h-36 md:h-40 flex-1">
         {items.map((item, index) => (
           <div
             key={item.id}
-            className="absolute left-0 right-0 bg-white rounded-2xl p-4 border border-obsidian/5 shadow-lg transition-all duration-700"
+            className="absolute left-0 right-0 bg-white rounded-xl md:rounded-2xl p-3 md:p-4 border border-[#0D0D12]/5 shadow-lg transition-all duration-700"
             style={{
-              transform: `translateY(${index * 12}px) scale(${1 - index * 0.05})`,
+              transform: `translateY(${index * 10}px) scale(${1 - index * 0.05})`,
               zIndex: 3 - index,
               opacity: 1 - index * 0.2,
             }}
           >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-champagne/20 flex items-center justify-center">
-                <Check className="text-champagne" size={16} />
+            <div className="flex items-center gap-2 md:gap-3">
+              <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-[#C9A84C]/20 flex items-center justify-center flex-shrink-0">
+                <Check className="text-[#C9A84C] w-3.5 h-3.5 md:w-4 md:h-4" />
               </div>
-              <span className="font-medium text-obsidian">{item.label}</span>
+              <span className="font-medium text-[#0D0D12] text-sm md:text-base">{item.label}</span>
             </div>
           </div>
         ))}
@@ -314,29 +330,29 @@ function TypewriterCard() {
   }, [currentMessage]);
 
   return (
-    <div className="bg-ivory rounded-[2rem] p-8 border border-obsidian/5 shadow-xl shadow-obsidian/5 h-full flex flex-col">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-full bg-champagne/10 flex items-center justify-center">
-          <Shield className="text-champagne" size={20} />
+    <div className="bg-[#FAF8F5] rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-8 border border-[#0D0D12]/5 shadow-xl shadow-[#0D0D12]/5 h-full flex flex-col">
+      <div className="flex items-center gap-3 mb-4 md:mb-6">
+        <div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-[#C9A84C]/10 flex items-center justify-center flex-shrink-0">
+          <Shield className="text-[#C9A84C] w-4 h-4 md:w-5 md:h-5" />
         </div>
-        <h3 className="font-sans text-xl font-bold text-obsidian">Умное планирование</h3>
+        <h3 className="font-sans text-lg md:text-xl font-bold text-[#0D0D12]">Умное планирование</h3>
       </div>
       
-      <p className="text-slate text-sm mb-6 leading-relaxed">
+      <p className="text-[#2A2A35] text-sm mb-4 md:mb-6 leading-relaxed">
         Цифровой календарь с напоминаниями и персональный менеджер
       </p>
       
       {/* Live Feed */}
-      <div className="bg-obsidian rounded-2xl p-4 flex-1">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-2 h-2 rounded-full bg-green-500 pulse-dot" />
-          <span className="font-mono text-xs text-ivory/50 uppercase tracking-wider">
+      <div className="bg-[#0D0D12] rounded-xl md:rounded-2xl p-3 md:p-4 flex-1 min-h-[120px]">
+        <div className="flex items-center gap-2 mb-3 md:mb-4">
+          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+          <span className="font-mono text-[10px] md:text-xs text-[#FAF8F5]/50 uppercase tracking-wider">
             Live Feed
           </span>
         </div>
-        <p className="font-mono text-sm text-champagne">
+        <p className="font-mono text-xs md:text-sm text-[#C9A84C] leading-relaxed">
           {displayText}
-          {isTyping && <span className="typing-cursor" />}
+          {isTyping && <span className="inline-block w-0.5 h-4 md:h-5 bg-[#C9A84C] ml-0.5 animate-pulse" />}
         </p>
       </div>
     </div>
@@ -345,7 +361,6 @@ function TypewriterCard() {
 
 // Card 3 — "Cursor Protocol Scheduler"
 function SchedulerCard() {
-  const canvasRef = useRef<HTMLDivElement>(null);
   const [activeDay, setActiveDay] = useState<number | null>(null);
 
   useEffect(() => {
@@ -360,31 +375,31 @@ function SchedulerCard() {
     return () => clearInterval(interval);
   }, []);
 
-  const weekDays = ["С", "П", "В", "С", "Ч", "П", "Ш", "В"];
+  const weekDays = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
 
   return (
-    <div className="bg-ivory rounded-[2rem] p-8 border border-obsidian/5 shadow-xl shadow-obsidian/5 h-full flex flex-col">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-full bg-champagne/10 flex items-center justify-center">
-          <Calendar className="text-champagne" size={20} />
+    <div className="bg-[#FAF8F5] rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-8 border border-[#0D0D12]/5 shadow-xl shadow-[#0D0D12]/5 h-full flex flex-col">
+      <div className="flex items-center gap-3 mb-4 md:mb-6">
+        <div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-[#C9A84C]/10 flex items-center justify-center flex-shrink-0">
+          <Calendar className="text-[#C9A84C] w-4 h-4 md:w-5 md:h-5" />
         </div>
-        <h3 className="font-sans text-xl font-bold text-obsidian">Гарантия результата</h3>
+        <h3 className="font-sans text-lg md:text-xl font-bold text-[#0D0D12]">Гарантия результата</h3>
       </div>
       
-      <p className="text-slate text-sm mb-6 leading-relaxed">
+      <p className="text-[#2A2A35] text-sm mb-4 md:mb-6 leading-relaxed">
         Страховка имущества и бесплатный доклинг при необходимости
       </p>
       
       {/* Weekly Grid */}
-      <div ref={canvasRef} className="bg-white rounded-2xl p-4 flex-1">
-        <div className="grid grid-cols-7 gap-2 mb-4">
+      <div className="bg-white rounded-xl md:rounded-2xl p-3 md:p-4 flex-1">
+        <div className="grid grid-cols-7 gap-1.5 md:gap-2 mb-3 md:mb-4">
           {weekDays.map((day, index) => (
             <div
               key={index}
-              className={`aspect-square rounded-xl flex items-center justify-center font-mono text-sm transition-all duration-300 ${
+              className={`aspect-square rounded-lg md:rounded-xl flex items-center justify-center font-mono text-[10px] md:text-sm transition-all duration-300 ${
                 activeDay === index
-                  ? "bg-champagne text-obsidian scale-95"
-                  : "bg-obsidian/5 text-slate"
+                  ? "bg-[#C9A84C] text-[#0D0D12] scale-95"
+                  : "bg-[#0D0D12]/5 text-[#2A2A35]"
               }`}
             >
               {day}
@@ -392,9 +407,9 @@ function SchedulerCard() {
           ))}
         </div>
         
-        <div className="flex items-center justify-between">
-          <span className="font-mono text-xs text-slate">Ближайший слот: завтра, 10:00</span>
-          <button className="bg-obsidian text-ivory px-4 py-2 rounded-full text-xs font-medium magnetic-hover">
+        <div className="flex items-center justify-between gap-2">
+          <span className="font-mono text-[10px] md:text-xs text-[#2A2A35] truncate">Ближайший слот: завтра, 10:00</span>
+          <button className="bg-[#0D0D12] text-[#FAF8F5] px-3 md:px-4 py-1.5 md:py-2 rounded-full text-[10px] md:text-xs font-medium whitespace-nowrap transition-transform hover:scale-[1.03]">
             Сохранить
           </button>
         </div>
@@ -429,18 +444,18 @@ function Features() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="услуги" className="py-24 md:py-32 px-6 md:px-16 bg-ivory">
+    <section ref={sectionRef} id="услуги" className="py-16 md:py-32 px-5 md:px-16 bg-[#FAF8F5]">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <p className="font-mono text-champagne text-sm tracking-wider mb-4">
+        <div className="text-center mb-12 md:mb-16">
+          <p className="font-mono text-[#C9A84C] text-xs md:text-sm tracking-wider mb-3 md:mb-4">
             ТРИ ПРИНЦИПА
           </p>
-          <h2 className="font-sans text-4xl md:text-5xl font-bold text-obsidian tracking-tight">
+          <h2 className="font-sans text-3xl md:text-5xl font-bold text-[#0D0D12] tracking-tight">
             Почему выбирают нас
           </h2>
         </div>
         
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-3 gap-6 md:gap-8">
           <div className="feature-card">
             <ShufflerCard />
           </div>
@@ -485,46 +500,47 @@ function Philosophy() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative py-32 md:py-48 overflow-hidden">
+    <section ref={sectionRef} className="relative py-20 md:py-48 overflow-hidden">
       {/* Dark Background */}
-      <div className="absolute inset-0 bg-obsidian" />
+      <div className="absolute inset-0 bg-[#0D0D12]" />
       
-      {/* Texture Image */}
-      <div
-        className="absolute inset-0 opacity-10"
-        style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1618172193763-c511deb635ca?w=1920&q=80')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      />
+      {/* Texture Image - Desktop only */}
+      <div className="absolute inset-0 opacity-10 hidden md:block">
+        <Image
+          src="https://images.unsplash.com/photo-1618172193763-c511deb635ca?w=1920&q=80"
+          alt=""
+          fill
+          className="object-cover"
+          sizes="100vw"
+        />
+      </div>
       
       {/* Content */}
-      <div className="relative z-10 max-w-4xl mx-auto px-6 md:px-16 text-center">
-        <p className="philosophy-text text-ivory/60 text-lg md:text-xl mb-8 leading-relaxed">
+      <div className="relative z-10 max-w-4xl mx-auto px-5 md:px-16 text-center">
+        <p className="philosophy-text text-[#FAF8F5]/60 text-base md:text-xl mb-6 md:mb-8 leading-relaxed">
           Большинство клининговых компаний фокусируется на скорости и низкой цене.
         </p>
         
-        <h2 className="philosophy-text font-serif text-3xl md:text-5xl lg:text-6xl text-ivory leading-tight italic">
+        <h2 className="philosophy-text font-serif text-2xl md:text-5xl lg:text-6xl text-[#FAF8F5] leading-tight italic">
           Мы фокусируемся на{" "}
-          <span className="text-champagne not-italic font-sans font-bold">
+          <span className="text-[#C9A84C] not-italic font-sans font-bold">
             качестве и заботе
           </span>{" "}
           о вашем пространстве.
         </h2>
         
-        <div className="philosophy-text mt-12 flex flex-wrap justify-center gap-6">
-          <div className="flex items-center gap-2 text-ivory/50">
-            <div className="w-1.5 h-1.5 rounded-full bg-champagne" />
-            <span className="font-mono text-sm">100% эко-средства</span>
+        <div className="philosophy-text mt-8 md:mt-12 flex flex-wrap justify-center gap-4 md:gap-6">
+          <div className="flex items-center gap-2 text-[#FAF8F5]/50">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#C9A84C]" />
+            <span className="font-mono text-xs md:text-sm">100% эко-средства</span>
           </div>
-          <div className="flex items-center gap-2 text-ivory/50">
-            <div className="w-1.5 h-1.5 rounded-full bg-champagne" />
-            <span className="font-mono text-sm">Страховка до 500 000 ₽</span>
+          <div className="flex items-center gap-2 text-[#FAF8F5]/50">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#C9A84C]" />
+            <span className="font-mono text-xs md:text-sm">Страховка до 500 000 ₽</span>
           </div>
-          <div className="flex items-center gap-2 text-ivory/50">
-            <div className="w-1.5 h-1.5 rounded-full bg-champagne" />
-            <span className="font-mono text-sm">5000+ довольных клиентов</span>
+          <div className="flex items-center gap-2 text-[#FAF8F5]/50">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#C9A84C]" />
+            <span className="font-mono text-xs md:text-sm">5000+ довольных клиентов</span>
           </div>
         </div>
       </div>
@@ -537,34 +553,6 @@ function Philosophy() {
 // ========================================
 function Protocol() {
   const sectionRef = useRef<HTMLElement>(null);
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      cardRefs.current.forEach((card, index) => {
-        if (!card) return;
-        
-        ScrollTrigger.create({
-          trigger: card,
-          start: "top top",
-          end: "bottom top",
-          pin: true,
-          pinSpacing: false,
-          onUpdate: (self) => {
-            const progress = self.progress;
-            gsap.to(card, {
-              scale: 1 - progress * 0.1,
-              filter: `blur(${progress * 20}px)`,
-              opacity: 1 - progress * 0.5,
-              duration: 0.1,
-            });
-          },
-        });
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
 
   const steps = [
     {
@@ -588,37 +576,36 @@ function Protocol() {
   ];
 
   return (
-    <section ref={sectionRef} id="о-нас" className="bg-slate py-24 md:py-32">
-      <div className="max-w-6xl mx-auto px-6 md:px-16">
-        <div className="text-center mb-16">
-          <p className="font-mono text-champagne text-sm tracking-wider mb-4">
+    <section ref={sectionRef} id="о-нас" className="bg-[#2A2A35] py-16 md:py-32">
+      <div className="max-w-6xl mx-auto px-5 md:px-16">
+        <div className="text-center mb-12 md:mb-16">
+          <p className="font-mono text-[#C9A84C] text-xs md:text-sm tracking-wider mb-3 md:mb-4">
             ПРОТОКОЛ
           </p>
-          <h2 className="font-sans text-4xl md:text-5xl font-bold text-ivory tracking-tight">
+          <h2 className="font-sans text-3xl md:text-5xl font-bold text-[#FAF8F5] tracking-tight">
             Как мы работаем
           </h2>
         </div>
         
-        <div className="space-y-8">
-          {steps.map((step, index) => (
+        <div className="space-y-6 md:space-y-8">
+          {steps.map((step) => (
             <div
               key={step.number}
-              ref={(el) => { cardRefs.current[index] = el; }}
-              className="bg-obsidian rounded-[3rem] p-8 md:p-12 border border-ivory/5 relative overflow-hidden"
+              className="bg-[#0D0D12] rounded-[2rem] md:rounded-[3rem] p-6 md:p-12 border border-[#FAF8F5]/5 relative overflow-hidden"
             >
-              <div className="grid md:grid-cols-2 gap-8 items-center">
+              <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center">
                 <div>
-                  <span className="font-mono text-champagne text-sm">{step.number}</span>
-                  <h3 className="font-sans text-3xl md:text-4xl font-bold text-ivory mt-2 mb-4">
+                  <span className="font-mono text-[#C9A84C] text-xs md:text-sm">{step.number}</span>
+                  <h3 className="font-sans text-2xl md:text-4xl font-bold text-[#FAF8F5] mt-2 mb-3 md:mb-4">
                     {step.title}
                   </h3>
-                  <p className="text-ivory/60 text-lg leading-relaxed">
+                  <p className="text-[#FAF8F5]/60 text-base md:text-lg leading-relaxed">
                     {step.description}
                   </p>
                 </div>
                 
                 {/* Animation Canvas */}
-                <div className="relative h-48 md:h-64">
+                <div className="relative h-40 md:h-64">
                   {step.animation === "helix" && <HelixAnimation />}
                   {step.animation === "scan" && <ScanAnimation />}
                   {step.animation === "wave" && <WaveAnimation />}
@@ -845,53 +832,53 @@ function Pricing() {
   ];
 
   return (
-    <section ref={sectionRef} id="цены" className="py-24 md:py-32 px-6 md:px-16 bg-ivory">
+    <section ref={sectionRef} id="цены" className="py-16 md:py-32 px-5 md:px-16 bg-[#FAF8F5]">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <p className="font-mono text-champagne text-sm tracking-wider mb-4">
+        <div className="text-center mb-12 md:mb-16">
+          <p className="font-mono text-[#C9A84C] text-xs md:text-sm tracking-wider mb-3 md:mb-4">
             ТАРИФЫ
           </p>
-          <h2 className="font-sans text-4xl md:text-5xl font-bold text-obsidian tracking-tight">
+          <h2 className="font-sans text-3xl md:text-5xl font-bold text-[#0D0D12] tracking-tight">
             Прозрачные цены
           </h2>
         </div>
         
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-3 gap-6 md:gap-8">
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`pricing-card rounded-[2rem] p-8 ${
+              className={`pricing-card rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-8 ${
                 plan.highlighted
-                  ? "bg-obsidian text-ivory scale-105 ring-2 ring-champagne shadow-2xl shadow-champagne/20"
-                  : "bg-white border border-obsidian/5 shadow-xl shadow-obsidian/5"
+                  ? "bg-[#0D0D12] text-[#FAF8F5] md:scale-105 ring-2 ring-[#C9A84C] shadow-2xl shadow-[#C9A84C]/20"
+                  : "bg-white border border-[#0D0D12]/5 shadow-xl shadow-[#0D0D12]/5"
               }`}
             >
               {plan.highlighted && (
-                <div className="bg-champagne text-obsidian text-xs font-bold px-3 py-1 rounded-full inline-block mb-4">
+                <div className="bg-[#C9A84C] text-[#0D0D12] text-[10px] md:text-xs font-bold px-3 py-1 rounded-full inline-block mb-3 md:mb-4">
                   ПОПУЛЯРНЫЙ
                 </div>
               )}
               
-              <h3 className={`font-sans text-2xl font-bold ${plan.highlighted ? "text-ivory" : "text-obsidian"}`}>
+              <h3 className={`font-sans text-xl md:text-2xl font-bold ${plan.highlighted ? "text-[#FAF8F5]" : "text-[#0D0D12]"}`}>
                 {plan.name}
               </h3>
               
-              <p className={`text-sm mt-2 mb-6 ${plan.highlighted ? "text-ivory/60" : "text-slate"}`}>
+              <p className={`text-xs md:text-sm mt-2 mb-4 md:mb-6 ${plan.highlighted ? "text-[#FAF8F5]/60" : "text-[#2A2A35]"}`}>
                 {plan.description}
               </p>
               
-              <div className="mb-6">
-                <span className={`font-serif text-4xl italic ${plan.highlighted ? "text-champagne" : "text-obsidian"}`}>
+              <div className="mb-4 md:mb-6">
+                <span className={`font-serif text-3xl md:text-4xl italic ${plan.highlighted ? "text-[#C9A84C]" : "text-[#0D0D12]"}`}>
                   {plan.price}
                 </span>
-                <span className={`text-sm ${plan.highlighted ? "text-ivory/50" : "text-slate"}`}> ₽</span>
+                <span className={`text-xs md:text-sm ${plan.highlighted ? "text-[#FAF8F5]/50" : "text-[#2A2A35]"}`}> ₽</span>
               </div>
               
-              <ul className="space-y-3 mb-8">
+              <ul className="space-y-2 md:space-y-3 mb-6 md:mb-8">
                 {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-center gap-3">
-                    <Check size={16} className={plan.highlighted ? "text-champagne" : "text-champagne"} />
-                    <span className={`text-sm ${plan.highlighted ? "text-ivory/80" : "text-slate"}`}>
+                  <li key={feature} className="flex items-center gap-2 md:gap-3">
+                    <Check size={14} className="text-[#C9A84C] flex-shrink-0 md:w-4 md:h-4" />
+                    <span className={`text-xs md:text-sm ${plan.highlighted ? "text-[#FAF8F5]/80" : "text-[#2A2A35]"}`}>
                       {feature}
                     </span>
                   </li>
@@ -900,10 +887,10 @@ function Pricing() {
               
               <a
                 href="#контакты"
-                className={`block text-center py-3 rounded-full font-medium magnetic-hover ${
+                className={`block text-center py-2.5 md:py-3 rounded-full font-medium text-sm md:text-base transition-transform hover:scale-[1.03] duration-300 ${
                   plan.highlighted
-                    ? "bg-champagne text-obsidian"
-                    : "bg-obsidian text-ivory"
+                    ? "bg-[#C9A84C] text-[#0D0D12]"
+                    : "bg-[#0D0D12] text-[#FAF8F5]"
                 }`}
               >
                 Заказать
@@ -921,34 +908,34 @@ function Pricing() {
 // ========================================
 function Footer() {
   return (
-    <footer id="контакты" className="bg-obsidian rounded-t-[4rem] pt-16 pb-8 px-6 md:px-16">
+    <footer id="контакты" className="bg-[#0D0D12] rounded-t-[2rem] md:rounded-t-[4rem] pt-12 md:pt-16 pb-6 md:pb-8 px-5 md:px-16">
       <div className="max-w-6xl mx-auto">
-        <div className="grid md:grid-cols-4 gap-12 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-10 md:mb-12">
           {/* Brand */}
-          <div className="md:col-span-1">
-            <h3 className="font-serif text-3xl text-ivory italic mb-4">LUMEN</h3>
-            <p className="text-ivory/50 text-sm leading-relaxed mb-6">
+          <div className="col-span-2 md:col-span-1">
+            <h3 className="font-serif text-2xl md:text-3xl text-[#FAF8F5] italic mb-3 md:mb-4">LUMEN</h3>
+            <p className="text-[#FAF8F5]/50 text-xs md:text-sm leading-relaxed mb-4 md:mb-6">
               Премиальный эко-клининг нового поколения. Научный подход к чистоте, этичный к природе.
             </p>
             
             {/* Status Indicator */}
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-green-500 pulse-dot" />
-              <span className="font-mono text-xs text-ivory/50">Система активна</span>
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <span className="font-mono text-[10px] md:text-xs text-[#FAF8F5]/50">Система активна</span>
             </div>
           </div>
           
           {/* Navigation */}
           <div>
-            <h4 className="font-sans text-sm font-bold text-ivory mb-4 uppercase tracking-wider">
+            <h4 className="font-sans text-xs md:text-sm font-bold text-[#FAF8F5] mb-3 md:mb-4 uppercase tracking-wider">
               Навигация
             </h4>
-            <ul className="space-y-2">
+            <ul className="space-y-1.5 md:space-y-2">
               {["Услуги", "О нас", "Цены", "Контакты"].map((item) => (
                 <li key={item}>
                   <a
                     href={`#${item.toLowerCase().replace(" ", "-")}`}
-                    className="text-ivory/50 text-sm hover:text-champagne transition-colors"
+                    className="text-[#FAF8F5]/50 text-xs md:text-sm hover:text-[#C9A84C] transition-colors"
                   >
                     {item}
                   </a>
@@ -959,13 +946,13 @@ function Footer() {
           
           {/* Services */}
           <div>
-            <h4 className="font-sans text-sm font-bold text-ivory mb-4 uppercase tracking-wider">
+            <h4 className="font-sans text-xs md:text-sm font-bold text-[#FAF8F5] mb-3 md:mb-4 uppercase tracking-wider">
               Услуги
             </h4>
-            <ul className="space-y-2">
+            <ul className="space-y-1.5 md:space-y-2">
               {["Уборка квартир", "Генеральная уборка", "Уборка офисов", "Химчистка мебели"].map((item) => (
                 <li key={item}>
-                  <span className="text-ivory/50 text-sm">{item}</span>
+                  <span className="text-[#FAF8F5]/50 text-xs md:text-sm">{item}</span>
                 </li>
               ))}
             </ul>
@@ -973,25 +960,25 @@ function Footer() {
           
           {/* Contact */}
           <div>
-            <h4 className="font-sans text-sm font-bold text-ivory mb-4 uppercase tracking-wider">
+            <h4 className="font-sans text-xs md:text-sm font-bold text-[#FAF8F5] mb-3 md:mb-4 uppercase tracking-wider">
               Контакты
             </h4>
-            <ul className="space-y-3">
-              <li className="flex items-center gap-3">
-                <Phone size={16} className="text-champagne" />
-                <a href="tel:+74951234567" className="text-ivory/50 text-sm hover:text-champagne transition-colors">
+            <ul className="space-y-2 md:space-y-3">
+              <li className="flex items-center gap-2 md:gap-3">
+                <Phone size={14} className="text-[#C9A84C] flex-shrink-0" />
+                <a href="tel:+74951234567" className="text-[#FAF8F5]/50 text-xs md:text-sm hover:text-[#C9A84C] transition-colors">
                   +7 (495) 123-45-67
                 </a>
               </li>
-              <li className="flex items-center gap-3">
-                <Mail size={16} className="text-champagne" />
-                <a href="mailto:info@lumen.clean" className="text-ivory/50 text-sm hover:text-champagne transition-colors">
+              <li className="flex items-center gap-2 md:gap-3">
+                <Mail size={14} className="text-[#C9A84C] flex-shrink-0" />
+                <a href="mailto:info@lumen.clean" className="text-[#FAF8F5]/50 text-xs md:text-sm hover:text-[#C9A84C] transition-colors">
                   info@lumen.clean
                 </a>
               </li>
-              <li className="flex items-start gap-3">
-                <MapPin size={16} className="text-champagne mt-0.5" />
-                <span className="text-ivory/50 text-sm">
+              <li className="flex items-start gap-2 md:gap-3">
+                <MapPin size={14} className="text-[#C9A84C] mt-0.5 flex-shrink-0" />
+                <span className="text-[#FAF8F5]/50 text-xs md:text-sm">
                   Москва, ул. Тверская, 1
                 </span>
               </li>
@@ -1000,16 +987,16 @@ function Footer() {
         </div>
         
         {/* Bottom */}
-        <div className="border-t border-ivory/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-ivory/30 text-xs">
+        <div className="border-t border-[#FAF8F5]/10 pt-6 md:pt-8 flex flex-col md:flex-row justify-between items-center gap-3 md:gap-4">
+          <p className="text-[#FAF8F5]/30 text-[10px] md:text-xs text-center md:text-left">
             © 2024 LUMEN. Все права защищены.
           </p>
           
-          <div className="flex gap-6">
-            <a href="#" className="text-ivory/30 text-xs hover:text-ivory/50 transition-colors">
+          <div className="flex gap-4 md:gap-6">
+            <a href="#" className="text-[#FAF8F5]/30 text-[10px] md:text-xs hover:text-[#FAF8F5]/50 transition-colors">
               Политика конфиденциальности
             </a>
-            <a href="#" className="text-ivory/30 text-xs hover:text-ivory/50 transition-colors">
+            <a href="#" className="text-[#FAF8F5]/30 text-[10px] md:text-xs hover:text-[#FAF8F5]/50 transition-colors">
               Условия использования
             </a>
           </div>
@@ -1024,7 +1011,7 @@ function Footer() {
 // ========================================
 export default function Home() {
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen bg-[#FAF8F5]">
       <Navbar />
       <Hero />
       <Features />
