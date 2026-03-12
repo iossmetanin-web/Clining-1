@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Image from "next/image";
 import { 
   Sparkles, 
   Calendar, 
@@ -28,7 +27,6 @@ if (typeof window !== "undefined") {
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,7 +36,6 @@ function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu on escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") setMobileOpen(false);
@@ -49,7 +46,6 @@ function Navbar() {
 
   return (
     <nav
-      ref={navRef}
       className={`fixed top-4 md:top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 max-w-[95vw] ${
         scrolled
           ? "bg-[#FAF8F5]/80 backdrop-blur-xl border border-[#0D0D12]/10 shadow-lg shadow-[#0D0D12]/5"
@@ -57,7 +53,6 @@ function Navbar() {
       } rounded-full px-3 py-2 md:px-2`}
     >
       <div className="flex items-center gap-2 md:gap-6">
-        {/* Logo */}
         <a href="#" className="flex items-center gap-2 px-2 md:px-4">
           <span className={`font-serif text-xl md:text-2xl tracking-tight transition-colors duration-300 ${
             scrolled ? "text-[#0D0D12]" : "text-[#FAF8F5]"
@@ -66,7 +61,6 @@ function Navbar() {
           </span>
         </a>
 
-        {/* Desktop Nav Links */}
         <div className="hidden md:flex items-center gap-6">
           {["Услуги", "О нас", "Цены", "Контакты"].map((item) => (
             <a
@@ -81,7 +75,6 @@ function Navbar() {
           ))}
         </div>
 
-        {/* CTA Button - Desktop */}
         <a
           href="#цены"
           className="hidden md:flex items-center gap-2 bg-[#C9A84C] text-[#0D0D12] px-5 py-2.5 rounded-full font-medium text-sm transition-transform hover:scale-[1.03] duration-300"
@@ -89,7 +82,6 @@ function Navbar() {
           Рассчитать стоимость
         </a>
 
-        {/* Mobile Menu Toggle */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
           className={`md:hidden p-2 rounded-full transition-colors ${
@@ -101,7 +93,6 @@ function Navbar() {
         </button>
       </div>
 
-      {/* Mobile Menu */}
       {mobileOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 mt-2 bg-[#FAF8F5] rounded-3xl shadow-xl p-6 border border-[#0D0D12]/10">
           <div className="flex flex-col gap-4">
@@ -159,31 +150,25 @@ function Hero() {
       ref={heroRef}
       className="relative h-[100dvh] min-h-[500px] md:min-h-[600px] flex items-end overflow-hidden"
     >
-      {/* Background Image with Next.js Image */}
-      <div className="absolute inset-0">
-        <Image
-          src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80"
-          alt="Luxury interior"
-          fill
-          priority
-          className="object-cover object-center"
-          sizes="100vw"
-        />
-      </div>
+      {/* Background Image - using regular img for better compatibility */}
+      <img
+        src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80"
+        alt="Luxury interior"
+        className="absolute inset-0 w-full h-full object-cover object-center"
+        loading="eager"
+        fetchPriority="high"
+      />
       
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D12] via-[#0D0D12]/70 to-transparent" />
       
       {/* Marble Texture Overlay - Desktop only */}
-      <div className="absolute inset-0 opacity-20 mix-blend-overlay hidden md:block">
-        <Image
-          src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80"
-          alt=""
-          fill
-          className="object-cover"
-          sizes="100vw"
-        />
-      </div>
+      <img
+        src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80"
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-overlay hidden md:block"
+        loading="lazy"
+      />
 
       {/* Content */}
       <div className="relative z-10 w-full px-5 md:px-16 pb-20 md:pb-24">
@@ -236,8 +221,6 @@ function Hero() {
 // ========================================
 // FEATURES — "Interactive Functional Artifacts"
 // ========================================
-
-// Card 1 — "Diagnostic Shuffler"
 function ShufflerCard() {
   const [items, setItems] = useState([
     { id: 1, label: "Гипоаллергенные формулы" },
@@ -270,7 +253,6 @@ function ShufflerCard() {
         Индивидуальный подбор эко-средств на основе анализа вашего пространства
       </p>
       
-      {/* Shuffler Cards */}
       <div className="relative h-36 md:h-40 flex-1">
         {items.map((item, index) => (
           <div
@@ -295,7 +277,6 @@ function ShufflerCard() {
   );
 }
 
-// Card 2 — "Telemetry Typewriter"
 function TypewriterCard() {
   const messages = [
     "Обнаружено 0 аллергенов в зоне обработки",
@@ -342,7 +323,6 @@ function TypewriterCard() {
         Цифровой календарь с напоминаниями и персональный менеджер
       </p>
       
-      {/* Live Feed */}
       <div className="bg-[#0D0D12] rounded-xl md:rounded-2xl p-3 md:p-4 flex-1 min-h-[120px]">
         <div className="flex items-center gap-2 mb-3 md:mb-4">
           <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
@@ -359,7 +339,6 @@ function TypewriterCard() {
   );
 }
 
-// Card 3 — "Cursor Protocol Scheduler"
 function SchedulerCard() {
   const [activeDay, setActiveDay] = useState<number | null>(null);
 
@@ -390,7 +369,6 @@ function SchedulerCard() {
         Страховка имущества и бесплатный доклинг при необходимости
       </p>
       
-      {/* Weekly Grid */}
       <div className="bg-white rounded-xl md:rounded-2xl p-3 md:p-4 flex-1">
         <div className="grid grid-cols-7 gap-1.5 md:gap-2 mb-3 md:mb-4">
           {weekDays.map((day, index) => (
@@ -501,21 +479,16 @@ function Philosophy() {
 
   return (
     <section ref={sectionRef} className="relative py-20 md:py-48 overflow-hidden">
-      {/* Dark Background */}
       <div className="absolute inset-0 bg-[#0D0D12]" />
       
-      {/* Texture Image - Desktop only */}
-      <div className="absolute inset-0 opacity-10 hidden md:block">
-        <Image
-          src="https://images.unsplash.com/photo-1618172193763-c511deb635ca?w=1920&q=80"
-          alt=""
-          fill
-          className="object-cover"
-          sizes="100vw"
-        />
-      </div>
+      {/* Texture Image - Desktop only, using regular img */}
+      <img
+        src="https://images.unsplash.com/photo-1618172193763-c511deb635ca?w=1920&q=80"
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover opacity-10 hidden md:block"
+        loading="lazy"
+      />
       
-      {/* Content */}
       <div className="relative z-10 max-w-4xl mx-auto px-5 md:px-16 text-center">
         <p className="philosophy-text text-[#FAF8F5]/60 text-base md:text-xl mb-6 md:mb-8 leading-relaxed">
           Большинство клининговых компаний фокусируется на скорости и низкой цене.
@@ -604,7 +577,6 @@ function Protocol() {
                   </p>
                 </div>
                 
-                {/* Animation Canvas */}
                 <div className="relative h-40 md:h-64">
                   {step.animation === "helix" && <HelixAnimation />}
                   {step.animation === "scan" && <ScanAnimation />}
@@ -619,7 +591,7 @@ function Protocol() {
   );
 }
 
-// SVG Animation: Rotating Double Helix
+// SVG Animations
 function HelixAnimation() {
   const pathRef = useRef<SVGSVGElement>(null);
 
@@ -641,38 +613,15 @@ function HelixAnimation() {
 
   return (
     <svg ref={pathRef} viewBox="0 0 200 200" className="w-full h-full">
-      <path
-        className="helix-path"
-        d="M100,10 Q150,50 100,100 Q50,150 100,190"
-        fill="none"
-        stroke="#C9A84C"
-        strokeWidth="2"
-        opacity="0.8"
-      />
-      <path
-        className="helix-path"
-        d="M100,10 Q50,50 100,100 Q150,150 100,190"
-        fill="none"
-        stroke="#C9A84C"
-        strokeWidth="2"
-        opacity="0.4"
-      />
+      <path className="helix-path" d="M100,10 Q150,50 100,100 Q50,150 100,190" fill="none" stroke="#C9A84C" strokeWidth="2" opacity="0.8" />
+      <path className="helix-path" d="M100,10 Q50,50 100,100 Q150,150 100,190" fill="none" stroke="#C9A84C" strokeWidth="2" opacity="0.4" />
       {[0, 1, 2, 3, 4].map((i) => (
-        <circle
-          key={i}
-          className="helix-path"
-          cx={100}
-          cy={30 + i * 35}
-          r="6"
-          fill="#C9A84C"
-          opacity={0.3 + i * 0.15}
-        />
+        <circle key={i} className="helix-path" cx={100} cy={30 + i * 35} r="6" fill="#C9A84C" opacity={0.3 + i * 0.15} />
       ))}
     </svg>
   );
 }
 
-// SVG Animation: Scanning Laser Line
 function ScanAnimation() {
   const lineRef = useRef<SVGLineElement>(null);
 
@@ -694,37 +643,18 @@ function ScanAnimation() {
 
   return (
     <svg viewBox="0 0 200 200" className="w-full h-full">
-      {/* Grid */}
       {Array.from({ length: 5 }).map((_, i) => (
         <g key={i}>
           {Array.from({ length: 5 }).map((_, j) => (
-            <circle
-              key={`${i}-${j}`}
-              cx={30 + j * 35}
-              cy={30 + i * 35}
-              r="4"
-              fill="#C9A84C"
-              opacity="0.3"
-            />
+            <circle key={`${i}-${j}`} cx={30 + j * 35} cy={30 + i * 35} r="4" fill="#C9A84C" opacity="0.3" />
           ))}
         </g>
       ))}
-      {/* Scanning Line */}
-      <line
-        ref={lineRef}
-        x1="10"
-        y1="20"
-        x2="190"
-        y2="20"
-        stroke="#C9A84C"
-        strokeWidth="2"
-        opacity="0.8"
-      />
+      <line ref={lineRef} x1="10" y1="20" x2="190" y2="20" stroke="#C9A84C" strokeWidth="2" opacity="0.8" />
     </svg>
   );
 }
 
-// SVG Animation: Pulsing Waveform
 function WaveAnimation() {
   const pathRef = useRef<SVGPathElement>(null);
 
@@ -745,24 +675,8 @@ function WaveAnimation() {
 
   return (
     <svg viewBox="0 0 200 80" className="w-full h-full">
-      <path
-        ref={pathRef}
-        d="M0,40 Q25,10 50,40 T100,40 T150,40 T200,40"
-        fill="none"
-        stroke="#C9A84C"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeDasharray="10 5"
-        opacity="0.8"
-      />
-      <path
-        d="M0,40 Q25,70 50,40 T100,40 T150,40 T200,40"
-        fill="none"
-        stroke="#C9A84C"
-        strokeWidth="2"
-        strokeLinecap="round"
-        opacity="0.3"
-      />
+      <path ref={pathRef} d="M0,40 Q25,10 50,40 T100,40 T150,40 T200,40" fill="none" stroke="#C9A84C" strokeWidth="3" strokeLinecap="round" strokeDasharray="10 5" opacity="0.8" />
+      <path d="M0,40 Q25,70 50,40 T100,40 T150,40 T200,40" fill="none" stroke="#C9A84C" strokeWidth="2" strokeLinecap="round" opacity="0.3" />
     </svg>
   );
 }
@@ -807,26 +721,14 @@ function Pricing() {
       name: "Премиум",
       price: "от 7 900",
       description: "Генеральная уборка с эко-средствами",
-      features: [
-        "Всё из Базового",
-        "Уборка кухни (внутри шкафов)",
-        "Мытьё окон и зеркал",
-        "Химчистка мягкой мебели",
-        "Эко-средства включены",
-      ],
+      features: ["Всё из Базового", "Уборка кухни (внутри шкафов)", "Мытьё окон и зеркал", "Химчистка мягкой мебели", "Эко-средства включены"],
       highlighted: true,
     },
     {
       name: "Корпоративный",
       price: "Договорная",
       description: "Регулярная уборка офисов и бизнес-центров",
-      features: [
-        "Индивидуальный график",
-        "Персональный менеджер",
-        "Страховка имущества",
-        "Ежемесячный отчёт",
-        "Приоритетное обслуживание",
-      ],
+      features: ["Индивидуальный график", "Персональный менеджер", "Страховка имущества", "Ежемесячный отчёт", "Приоритетное обслуживание"],
       highlighted: false,
     },
   ];
@@ -888,9 +790,7 @@ function Pricing() {
               <a
                 href="#контакты"
                 className={`block text-center py-2.5 md:py-3 rounded-full font-medium text-sm md:text-base transition-transform hover:scale-[1.03] duration-300 ${
-                  plan.highlighted
-                    ? "bg-[#C9A84C] text-[#0D0D12]"
-                    : "bg-[#0D0D12] text-[#FAF8F5]"
+                  plan.highlighted ? "bg-[#C9A84C] text-[#0D0D12]" : "bg-[#0D0D12] text-[#FAF8F5]"
                 }`}
               >
                 Заказать
@@ -911,32 +811,23 @@ function Footer() {
     <footer id="контакты" className="bg-[#0D0D12] rounded-t-[2rem] md:rounded-t-[4rem] pt-12 md:pt-16 pb-6 md:pb-8 px-5 md:px-16">
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-10 md:mb-12">
-          {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <h3 className="font-serif text-2xl md:text-3xl text-[#FAF8F5] italic mb-3 md:mb-4">LUMEN</h3>
             <p className="text-[#FAF8F5]/50 text-xs md:text-sm leading-relaxed mb-4 md:mb-6">
               Премиальный эко-клининг нового поколения. Научный подход к чистоте, этичный к природе.
             </p>
-            
-            {/* Status Indicator */}
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
               <span className="font-mono text-[10px] md:text-xs text-[#FAF8F5]/50">Система активна</span>
             </div>
           </div>
           
-          {/* Navigation */}
           <div>
-            <h4 className="font-sans text-xs md:text-sm font-bold text-[#FAF8F5] mb-3 md:mb-4 uppercase tracking-wider">
-              Навигация
-            </h4>
+            <h4 className="font-sans text-xs md:text-sm font-bold text-[#FAF8F5] mb-3 md:mb-4 uppercase tracking-wider">Навигация</h4>
             <ul className="space-y-1.5 md:space-y-2">
               {["Услуги", "О нас", "Цены", "Контакты"].map((item) => (
                 <li key={item}>
-                  <a
-                    href={`#${item.toLowerCase().replace(" ", "-")}`}
-                    className="text-[#FAF8F5]/50 text-xs md:text-sm hover:text-[#C9A84C] transition-colors"
-                  >
+                  <a href={`#${item.toLowerCase().replace(" ", "-")}`} className="text-[#FAF8F5]/50 text-xs md:text-sm hover:text-[#C9A84C] transition-colors">
                     {item}
                   </a>
                 </li>
@@ -944,11 +835,8 @@ function Footer() {
             </ul>
           </div>
           
-          {/* Services */}
           <div>
-            <h4 className="font-sans text-xs md:text-sm font-bold text-[#FAF8F5] mb-3 md:mb-4 uppercase tracking-wider">
-              Услуги
-            </h4>
+            <h4 className="font-sans text-xs md:text-sm font-bold text-[#FAF8F5] mb-3 md:mb-4 uppercase tracking-wider">Услуги</h4>
             <ul className="space-y-1.5 md:space-y-2">
               {["Уборка квартир", "Генеральная уборка", "Уборка офисов", "Химчистка мебели"].map((item) => (
                 <li key={item}>
@@ -958,11 +846,8 @@ function Footer() {
             </ul>
           </div>
           
-          {/* Contact */}
           <div>
-            <h4 className="font-sans text-xs md:text-sm font-bold text-[#FAF8F5] mb-3 md:mb-4 uppercase tracking-wider">
-              Контакты
-            </h4>
+            <h4 className="font-sans text-xs md:text-sm font-bold text-[#FAF8F5] mb-3 md:mb-4 uppercase tracking-wider">Контакты</h4>
             <ul className="space-y-2 md:space-y-3">
               <li className="flex items-center gap-2 md:gap-3">
                 <Phone size={14} className="text-[#C9A84C] flex-shrink-0" />
@@ -978,20 +863,16 @@ function Footer() {
               </li>
               <li className="flex items-start gap-2 md:gap-3">
                 <MapPin size={14} className="text-[#C9A84C] mt-0.5 flex-shrink-0" />
-                <span className="text-[#FAF8F5]/50 text-xs md:text-sm">
-                  Москва, ул. Тверская, 1
-                </span>
+                <span className="text-[#FAF8F5]/50 text-xs md:text-sm">Москва, ул. Тверская, 1</span>
               </li>
             </ul>
           </div>
         </div>
         
-        {/* Bottom */}
         <div className="border-t border-[#FAF8F5]/10 pt-6 md:pt-8 flex flex-col md:flex-row justify-between items-center gap-3 md:gap-4">
           <p className="text-[#FAF8F5]/30 text-[10px] md:text-xs text-center md:text-left">
             © 2024 LUMEN. Все права защищены.
           </p>
-          
           <div className="flex gap-4 md:gap-6">
             <a href="#" className="text-[#FAF8F5]/30 text-[10px] md:text-xs hover:text-[#FAF8F5]/50 transition-colors">
               Политика конфиденциальности
