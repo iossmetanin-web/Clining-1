@@ -150,9 +150,9 @@ function Hero() {
       ref={heroRef}
       className="relative h-[100dvh] min-h-[500px] md:min-h-[600px] flex items-end overflow-hidden"
     >
-      {/* Background Image - using regular img for better compatibility */}
+      {/* Background Image - local file for Telegram browser compatibility */}
       <img
-        src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80"
+        src="/images/hero-main.jpg"
         alt="Luxury interior"
         className="absolute inset-0 w-full h-full object-cover object-center"
         loading="eager"
@@ -162,9 +162,9 @@ function Hero() {
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D12] via-[#0D0D12]/70 to-transparent" />
       
-      {/* Marble Texture Overlay - Desktop only */}
+      {/* Marble Texture Overlay - Desktop only, local file */}
       <img
-        src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80"
+        src="/images/hero-overlay.jpg"
         alt=""
         className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-overlay hidden md:block"
         loading="lazy"
@@ -481,9 +481,9 @@ function Philosophy() {
     <section ref={sectionRef} className="relative py-20 md:py-48 overflow-hidden">
       <div className="absolute inset-0 bg-[#0D0D12]" />
       
-      {/* Texture Image - Desktop only, using regular img */}
+      {/* Texture Image - Desktop only, local file */}
       <img
-        src="https://images.unsplash.com/photo-1618172193763-c511deb635ca?w=1920&q=80"
+        src="/images/philosophy.jpg"
         alt=""
         className="absolute inset-0 w-full h-full object-cover opacity-10 hidden md:block"
         loading="lazy"
